@@ -1,3 +1,17 @@
 <resources>
-    <string name="app_name">ProJudgeFeather</string>
+    <string name="app_name">ProJudge Feather</string>
+    <string name="default_player_1">Player 1</string>
+    <string name="default_player_2">Player 2</string>
+    <string name="rename_player_title">Rename Player</string>
+    <string name="player_name_label">Player Name</string>
+    <string name="save_button">Save</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="undo_description">Undo</string>
+    <string name="reset_description">Reset Match</string>
+    <string name="reset_dialog_title">Reset Score?</string>
+    <string name="reset_dialog_text">Are you sure you want to reset the current match scores to 0?</string>
+    <string name="reset_confirm">Reset</string>
+    <string name="rename_description">Rename</string>
+    <string name="status_match_point">MATCH POINT</string>
+    <string name="status_winner">WINNER</string>
 </resources>

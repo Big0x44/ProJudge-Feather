@@ -44,16 +44,18 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import de.big0x44.projudgefeather.R
 
 @Composable
 fun PlayerHalf(
     name: String,
     score: Int,
-    status: String?,
+    statusText: String?,
     gradientColors: List<Color>,
     onClick: () -> Unit,
     onRenameClick: () -> Unit,
@@ -92,7 +94,7 @@ fun PlayerHalf(
                 Spacer(modifier = Modifier.width(6.dp))
                 Icon(
                     imageVector = EditIcon,
-                    contentDescription = "Rename",
+                    contentDescription = stringResource(R.string.rename_description),
                     tint = Color.White.copy(alpha = 0.6f),
                     modifier = Modifier.size(16.dp)
                 )
@@ -134,7 +136,7 @@ fun PlayerHalf(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Pulse Animation for Match Point/Winner Status Badge
-            if (status != null) {
+            if (statusText != null) {
                 val infiniteTransition = rememberInfiniteTransition(label = "pulse")
                 val scale by infiniteTransition.animateFloat(
                     initialValue = 0.95f,
@@ -146,7 +148,8 @@ fun PlayerHalf(
                     label = "scale"
                 )
 
-                val badgeBgColor = if (status == "WINNER") Color(0xFF4CAF50) else Color(0xFFFF9800)
+                // Match status color coding
+                val badgeBgColor = if (statusText == stringResource(R.string.status_winner)) Color(0xFF4CAF50) else Color(0xFFFF9800)
 
                 Surface(
                     color = badgeBgColor,
@@ -157,7 +160,7 @@ fun PlayerHalf(
                     border = BorderStroke(1.dp, Color.White.copy(alpha = 0.2f))
                 ) {
                     Text(
-                        text = status,
+                        text = statusText,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
                         style = TextStyle(
                             fontSize = 14.sp,

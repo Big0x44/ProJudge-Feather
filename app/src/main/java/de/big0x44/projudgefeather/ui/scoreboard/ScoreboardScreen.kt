@@ -17,7 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import de.big0x44.projudgefeather.R
+import de.big0x44.projudgefeather.model.MatchStatus
 import de.big0x44.projudgefeather.ui.scoreboard.components.ControlPanel
 import de.big0x44.projudgefeather.ui.scoreboard.components.PlayerHalf
 import de.big0x44.projudgefeather.ui.scoreboard.components.RenameDialog
@@ -60,6 +63,23 @@ fun ScoreboardScreenContent(
     val redGradient = listOf(Color(0xFFE53935), Color(0xFFB71C1C))
     val blueGradient = listOf(Color(0xFF1E88E5), Color(0xFF0D47A1))
 
+    // Resolve Localized Display Names (fallback to resource default strings)
+    val displayName1 = uiState.name1 ?: stringResource(R.string.default_player_1)
+    val displayName2 = uiState.name2 ?: stringResource(R.string.default_player_2)
+
+    // Resolve Localized Status Text
+    val statusText1 = when (uiState.status1) {
+        MatchStatus.MATCH_POINT -> stringResource(R.string.status_match_point)
+        MatchStatus.WINNER -> stringResource(R.string.status_winner)
+        null -> null
+    }
+
+    val statusText2 = when (uiState.status2) {
+        MatchStatus.MATCH_POINT -> stringResource(R.string.status_match_point)
+        MatchStatus.WINNER -> stringResource(R.string.status_winner)
+        null -> null
+    }
+
     Box(modifier = modifier.fillMaxSize()) {
         val configuration = LocalConfiguration.current
         val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -68,18 +88,18 @@ fun ScoreboardScreenContent(
         if (isLandscape) {
             Row(modifier = Modifier.fillMaxSize()) {
                 PlayerHalf(
-                    name = uiState.name1,
+                    name = displayName1,
                     score = uiState.score1,
-                    status = uiState.status1,
+                    statusText = statusText1,
                     gradientColors = redGradient,
                     onClick = onIncrement1,
                     onRenameClick = { showRenameDialogForPlayer = 1 },
                     modifier = Modifier.weight(1f).fillMaxHeight()
                 )
                 PlayerHalf(
-                    name = uiState.name2,
+                    name = displayName2,
                     score = uiState.score2,
-                    status = uiState.status2,
+                    statusText = statusText2,
                     gradientColors = blueGradient,
                     onClick = onIncrement2,
                     onRenameClick = { showRenameDialogForPlayer = 2 },
@@ -89,18 +109,18 @@ fun ScoreboardScreenContent(
         } else {
             Column(modifier = Modifier.fillMaxSize()) {
                 PlayerHalf(
-                    name = uiState.name1,
+                    name = displayName1,
                     score = uiState.score1,
-                    status = uiState.status1,
+                    statusText = statusText1,
                     gradientColors = redGradient,
                     onClick = onIncrement1,
                     onRenameClick = { showRenameDialogForPlayer = 1 },
                     modifier = Modifier.weight(1f).fillMaxWidth()
                 )
                 PlayerHalf(
-                    name = uiState.name2,
+                    name = displayName2,
                     score = uiState.score2,
-                    status = uiState.status2,
+                    statusText = statusText2,
                     gradientColors = blueGradient,
                     onClick = onIncrement2,
                     onRenameClick = { showRenameDialogForPlayer = 2 },
@@ -121,7 +141,7 @@ fun ScoreboardScreenContent(
     // Rename Dialog Overlay
     if (showRenameDialogForPlayer != null) {
         val playerNum = showRenameDialogForPlayer!!
-        val currentName = if (playerNum == 1) uiState.name1 else uiState.name2
+        val currentName = if (playerNum == 1) displayName1 else displayName2
         RenameDialog(
             initialName = currentName,
             onDismiss = { showRenameDialogForPlayer = null },
@@ -146,8 +166,8 @@ fun ScoreboardPreview() {
                 score1 = 15,
                 score2 = 14,
                 name1 = "Alpha",
-                name2 = "Beta",
-                status1 = "MATCH POINT",
+                name2 = null,
+                status1 = MatchStatus.MATCH_POINT,
                 status2 = null,
                 canUndo = true
             ),

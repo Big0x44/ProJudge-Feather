@@ -27,7 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import de.big0x44.projudgefeather.R
 
 @Composable
 fun ControlPanel(
@@ -65,7 +67,7 @@ fun ControlPanel(
             ) {
                 Icon(
                     imageVector = UndoIcon,
-                    contentDescription = "Undo",
+                    contentDescription = stringResource(R.string.undo_description),
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -84,7 +86,7 @@ fun ControlPanel(
             ) {
                 Icon(
                     imageVector = RefreshIcon,
-                    contentDescription = "Reset Match",
+                    contentDescription = stringResource(R.string.reset_description),
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -94,8 +96,8 @@ fun ControlPanel(
     if (showResetConfirm) {
         AlertDialog(
             onDismissRequest = { showResetConfirm = false },
-            title = { Text("Reset Score?") },
-            text = { Text("Are you sure you want to reset the current match scores to 0?") },
+            title = { Text(stringResource(R.string.reset_dialog_title)) },
+            text = { Text(stringResource(R.string.reset_dialog_text)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -103,12 +105,12 @@ fun ControlPanel(
                         showResetConfirm = false
                     }
                 ) {
-                    Text("Reset", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.reset_confirm), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showResetConfirm = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel_button))
                 }
             }
         )

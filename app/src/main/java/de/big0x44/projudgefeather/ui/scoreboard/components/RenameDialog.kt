@@ -9,6 +9,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
+import de.big0x44.projudgefeather.R
 
 @Composable
 fun RenameDialog(
@@ -19,25 +21,24 @@ fun RenameDialog(
     var text by remember { mutableStateOf(initialName) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Rename Player") },
+        title = { Text(stringResource(R.string.rename_player_title)) },
         text = {
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it },
                 singleLine = true,
-                label = { Text("Player Name") }
+                label = { Text(stringResource(R.string.player_name_label)) }
             )
         },
         confirmButton = {
             TextButton(
                 onClick = { onConfirm(text) }
             ) {
-                Text("Save")
-            }
+                Text(stringResource(R.string.save_button)) }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel_button))
             }
         }
     )

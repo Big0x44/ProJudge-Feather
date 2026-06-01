@@ -1,5 +1,6 @@
 package de.big0x44.projudgefeather.ui.scoreboard
 
+import de.big0x44.projudgefeather.model.MatchStatus
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -21,8 +22,8 @@ class ScoreboardViewModelTest {
         val state = viewModel.uiState.value
         assertEquals(0, state.score1)
         assertEquals(0, state.score2)
-        assertEquals("Player 1", state.name1)
-        assertEquals("Player 2", state.name2)
+        assertNull(state.name1) // Null represents fallback to localized default
+        assertNull(state.name2)
         assertNull(state.status1)
         assertNull(state.status2)
         assertFalse(state.canUndo)
@@ -93,9 +94,9 @@ class ScoreboardViewModelTest {
         viewModel.renamePlayer1("Alice")
         assertEquals("Alice", viewModel.uiState.value.name1)
 
-        // Blank name should be ignored
+        // Blank name should clear custom name and revert to null (fallback to localized default)
         viewModel.renamePlayer1("  ")
-        assertEquals("Alice", viewModel.uiState.value.name1)
+        assertNull(viewModel.uiState.value.name1)
     }
 
     @Test
@@ -103,9 +104,9 @@ class ScoreboardViewModelTest {
         viewModel.renamePlayer2("Bob")
         assertEquals("Bob", viewModel.uiState.value.name2)
 
-        // Empty name should be ignored
+        // Empty name should clear custom name and revert to null (fallback to localized default)
         viewModel.renamePlayer2("")
-        assertEquals("Bob", viewModel.uiState.value.name2)
+        assertNull(viewModel.uiState.value.name2)
     }
 
     @Test
@@ -114,12 +115,12 @@ class ScoreboardViewModelTest {
         repeat(20) { viewModel.incrementScore1() }
         repeat(19) { viewModel.incrementScore2() }
 
-        assertEquals("MATCH POINT", viewModel.uiState.value.status1)
+        assertEquals(MatchStatus.MATCH_POINT, viewModel.uiState.value.status1)
         assertNull(viewModel.uiState.value.status2)
 
         // Score 21-19 (Player 1 wins)
         viewModel.incrementScore1()
-        assertEquals("WINNER", viewModel.uiState.value.status1)
+        assertEquals(MatchStatus.WINNER, viewModel.uiState.value.status1)
         assertNull(viewModel.uiState.value.status2)
     }
 }

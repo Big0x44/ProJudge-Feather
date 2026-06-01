@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">ProJudge Feather</string>
+    <string name="default_player_1">Spieler 1</string>
+    <string name="default_player_2">Spieler 2</string>
+    <string name="rename_player_title">Spieler umbenennen</string>
+    <string name="player_name_label">Spielername</string>
+    <string name="save_button">Speichern</string>
+    <string name="cancel_button">Abbrechen</string>
+    <string name="undo_description">Rückgängig</string>
+    <string name="reset_description">Spiel zurücksetzen</string>
+    <string name="reset_dialog_title">Spielstand zurücksetzen?</string>
+    <string name="reset_dialog_text">Möchtest du den aktuellen Spielstand wirklich auf 0 zurücksetzen?</string>
+    <string name="reset_confirm">Zurücksetzen</string>
+    <string name="rename_description">Umbenennen</string>
+    <string name="status_match_point">MATCHBALL</string>
+    <string name="status_winner">SIEGER</string>
+</resources>

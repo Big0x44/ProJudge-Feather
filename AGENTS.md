@@ -65,6 +65,9 @@ Run these commands from the project root directory:
    - To keep dependencies lightweight and fully compatible across different Compose platforms, define icons programmatically using custom vector paths (see [`VectorIcons.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/scoreboard/components/VectorIcons.kt)) instead of relying on heavy XML layouts or extra Google Icon dependencies.
 3. **Immutability**:
    - The UI State must always be declared as an immutable `data class` (`ScoreboardUiState`). State transitions must use the `.copy()` function inside `StateFlow.update {}` blocks.
+4. **Localization & Resource Decoupling**:
+   - Do not hardcode user-facing strings inside Compose UI files. Use `stringResource(R.string.id)` inside Composable functions.
+   - Keep the `ViewModel` agnostic of Android resource strings and `Context` objects. Instead, store type-safe structures like Enums (`MatchStatus`) or nullable attributes (e.g., `name1: String? = null` where `null` signifies fallback to default) inside the UI state, and resolve them to localized resource strings within the stateless visual content container.
 
 ---
 

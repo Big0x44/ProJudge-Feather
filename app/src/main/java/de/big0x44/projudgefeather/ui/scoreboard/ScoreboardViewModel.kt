@@ -69,19 +69,15 @@ class ScoreboardViewModel : ViewModel() {
 
     fun renamePlayer1(newName: String) {
         val name = newName.trim()
-        if (name.isNotEmpty()) {
-            _uiState.update { currentState ->
-                currentState.copy(name1 = name)
-            }
+        _uiState.update { currentState ->
+            currentState.copy(name1 = if (name.isNotEmpty()) name else null)
         }
     }
 
     fun renamePlayer2(newName: String) {
         val name = newName.trim()
-        if (name.isNotEmpty()) {
-            _uiState.update { currentState ->
-                currentState.copy(name2 = name)
-            }
+        _uiState.update { currentState ->
+            currentState.copy(name2 = if (name.isNotEmpty()) name else null)
         }
     }
 
