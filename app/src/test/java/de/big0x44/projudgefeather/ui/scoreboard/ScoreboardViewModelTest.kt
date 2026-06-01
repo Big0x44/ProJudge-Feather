@@ -1,0 +1,125 @@
+package de.big0x44.projudgefeather.ui.scoreboard
+
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+
+class ScoreboardViewModelTest {
+
+    private lateinit var viewModel: ScoreboardViewModel
+
+    @Before
+    fun setUp() {
+        viewModel = ScoreboardViewModel()
+    }
+
+    @Test
+    fun testInitialState() {
+        val state = viewModel.uiState.value
+        assertEquals(0, state.score1)
+        assertEquals(0, state.score2)
+        assertEquals("Player 1", state.name1)
+        assertEquals("Player 2", state.name2)
+        assertNull(state.status1)
+        assertNull(state.status2)
+        assertFalse(state.canUndo)
+    }
+
+    @Test
+    fun testIncrementScore1() {
+        viewModel.incrementScore1()
+        val state = viewModel.uiState.value
+        assertEquals(1, state.score1)
+        assertEquals(0, state.score2)
+        assertTrue(state.canUndo)
+    }
+
+    @Test
+    fun testIncrementScore2() {
+        viewModel.incrementScore2()
+        val state = viewModel.uiState.value
+        assertEquals(0, state.score1)
+        assertEquals(1, state.score2)
+        assertTrue(state.canUndo)
+    }
+
+    @Test
+    fun testUndo() {
+        // Increment player 1
+        viewModel.incrementScore1()
+        assertTrue(viewModel.uiState.value.canUndo)
+
+        // Increment player 2
+        viewModel.incrementScore2()
+        assertEquals(1, viewModel.uiState.value.score1)
+        assertEquals(1, viewModel.uiState.value.score2)
+
+        // Undo once
+        viewModel.undo()
+        var state = viewModel.uiState.value
+        assertEquals(1, state.score1)
+        assertEquals(0, state.score2)
+        assertTrue(state.canUndo)
+
+        // Undo twice
+        viewModel.undo()
+        state = viewModel.uiState.value
+        assertEquals(0, state.score1)
+        assertEquals(0, state.score2)
+        assertFalse(state.canUndo)
+    }
+
+    @Test
+    fun testReset() {
+        viewModel.incrementScore1()
+        viewModel.incrementScore1()
+        viewModel.incrementScore2()
+
+        viewModel.reset()
+
+        val state = viewModel.uiState.value
+        assertEquals(0, state.score1)
+        assertEquals(0, state.score2)
+        assertNull(state.status1)
+        assertNull(state.status2)
+        assertTrue(state.canUndo) // Reset is undoable!
+    }
+
+    @Test
+    fun testRenamePlayer1() {
+        viewModel.renamePlayer1("Alice")
+        assertEquals("Alice", viewModel.uiState.value.name1)
+
+        // Blank name should be ignored
+        viewModel.renamePlayer1("  ")
+        assertEquals("Alice", viewModel.uiState.value.name1)
+    }
+
+    @Test
+    fun testRenamePlayer2() {
+        viewModel.renamePlayer2("Bob")
+        assertEquals("Bob", viewModel.uiState.value.name2)
+
+        // Empty name should be ignored
+        viewModel.renamePlayer2("")
+        assertEquals("Bob", viewModel.uiState.value.name2)
+    }
+
+    @Test
+    fun testMatchPointStatusTransitions() {
+        // Play to 20-19
+        repeat(20) { viewModel.incrementScore1() }
+        repeat(19) { viewModel.incrementScore2() }
+
+        assertEquals("MATCH POINT", viewModel.uiState.value.status1)
+        assertNull(viewModel.uiState.value.status2)
+
+        // Score 21-19 (Player 1 wins)
+        viewModel.incrementScore1()
+        assertEquals("WINNER", viewModel.uiState.value.status1)
+        assertNull(viewModel.uiState.value.status2)
+    }
+}
