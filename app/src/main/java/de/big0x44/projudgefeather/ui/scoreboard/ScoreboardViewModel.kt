@@ -20,15 +20,20 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.InputStream
 import java.io.OutputStream
+import dagger.hilt.android.lifecycle.HiltViewModel
+import de.big0x44.projudgefeather.di.DatabaseScope
+import de.big0x44.projudgefeather.di.IoDispatcher
+import javax.inject.Inject
 
-class ScoreboardViewModel(
+@HiltViewModel
+class ScoreboardViewModel @Inject constructor(
     private val playerRepository: PlayerRepository,
     private val matchResultRepository: MatchResultRepository,
-    private val externalScope: CoroutineScope? = null,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    @param:DatabaseScope private val externalScope: CoroutineScope,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    private val currentScope = externalScope ?: viewModelScope
+    private val currentScope = externalScope
     private val _uiState = MutableStateFlow(ScoreboardUiState())
     val uiState: StateFlow<ScoreboardUiState> = _uiState.asStateFlow()
 

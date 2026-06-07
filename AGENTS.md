@@ -12,11 +12,15 @@ ProJudge Feather is built as a modern Android application using **Jetpack Compos
 - **Language**: Kotlin 2.2+
 - **UI Framework**: Jetpack Compose (using Material 3 UI widgets)
 - **Architecture**: Model-View-ViewModel (MVVM) with Unidirectional Data Flow (UDF)
+- **Dependency Injection**: Dagger Hilt 2.59.2+
 - **Build System**: Gradle (Kotlin DSL, `build.gradle.kts`)
 - **Testing**: JUnit 4
 
 ### Directory & Package Structure
-- **[`MainActivity.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/MainActivity.kt)**: Entry point loading the main UI.
+- **[`MainActivity.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/MainActivity.kt)**: Entry point loading the main UI, annotated with `@AndroidEntryPoint`.
+- **[`di/`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/di/)**: Dependency injection modules configuration.
+  - **[`AppModule.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/di/AppModule.kt)**: Provides singleton instances of database, DAOs, customized dispatchers and coroutine scopes.
+  - **[`RepositoryModule.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/di/RepositoryModule.kt)**: Binds repository implementations to domain repository interfaces.
 - **[`model/`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/)**: Core domain logic and repository interfaces (framework-independent).
   - **[`ScoreboardLogic.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/ScoreboardLogic.kt)**: Badminton rule checker.
   - **[`Player.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/Player.kt)**: Player domain model.
@@ -77,6 +81,11 @@ Run these commands from the project root directory:
 4. **Localization & Resource Decoupling**:
    - Do not hardcode user-facing strings inside Compose UI files. Use `stringResource(R.string.id)` inside Composable functions.
    - Keep the `ViewModel` agnostic of Android resource strings and `Context` objects. Instead, store type-safe structures like Enums (`MatchStatus`) or nullable attributes (e.g., `name1: String? = null` where `null` signifies fallback to default) inside the UI state, and resolve them to localized resource strings within the stateless visual content container.
+5. **Dependency Injection (Hilt)**:
+   - All classes requiring dependencies (ViewModels, Repositories, DAOs) should use constructor injection using `@Inject constructor`.
+   - Implementations of interfaces should be bound using `@Binds` in Dagger modules (e.g., [`RepositoryModule.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/di/RepositoryModule.kt)).
+   - Do not instantiate or hold references to global singletons manually. Use Dagger Hilt to manage the scopes and lifetimes.
+   - For injecting custom qualifiers on constructor parameters that are also properties, prepend the parameter annotations with the `@param:` target filter (e.g., `@param:DatabaseScope` or `@param:IoDispatcher`) to avoid Kotlin compiler property/parameter mismatch warnings and ensure correct Hilt code generation.
 
 ---
 

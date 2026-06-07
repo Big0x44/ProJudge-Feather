@@ -6,8 +6,9 @@ import de.big0x44.projudgefeather.model.Player
 import de.big0x44.projudgefeather.model.PlayerRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class PlayerRepositoryImpl(private val playerDao: PlayerDao) : PlayerRepository {
+class PlayerRepositoryImpl @Inject constructor(private val playerDao: PlayerDao) : PlayerRepository {
     override fun getAllPlayers(): Flow<List<Player>> {
         return playerDao.getAllPlayers().map { entities ->
             entities.map { Player(id = it.id, name = it.name) }

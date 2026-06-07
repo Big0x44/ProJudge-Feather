@@ -6,8 +6,9 @@ import de.big0x44.projudgefeather.model.MatchResult
 import de.big0x44.projudgefeather.model.MatchResultRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class MatchResultRepositoryImpl(private val matchResultDao: MatchResultDao) : MatchResultRepository {
+class MatchResultRepositoryImpl @Inject constructor(private val matchResultDao: MatchResultDao) : MatchResultRepository {
     override fun getAllMatches(): Flow<List<MatchResult>> {
         return matchResultDao.getAllMatches().map { entities ->
             entities.map {
