@@ -36,6 +36,8 @@ fun ControlPanel(
     canUndo: Boolean,
     onUndo: () -> Unit,
     onReset: () -> Unit,
+    onNewMatchClick: () -> Unit,
+    onHistoryClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showResetConfirm by remember { mutableStateOf(false) }
@@ -53,10 +55,11 @@ fun ControlPanel(
         border = BorderStroke(1.dp, Color.White.copy(alpha = 0.15f))
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            // Undo
             IconButton(
                 onClick = onUndo,
                 enabled = canUndo,
@@ -68,16 +71,17 @@ fun ControlPanel(
                 Icon(
                     imageVector = UndoIcon,
                     contentDescription = stringResource(R.string.undo_description),
-                    modifier = Modifier.size(22.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             }
 
             Box(
                 modifier = Modifier
-                    .size(width = 1.dp, height = 24.dp)
+                    .size(width = 1.dp, height = 20.dp)
                     .background(Color.White.copy(alpha = 0.15f))
             )
 
+            // Reset
             IconButton(
                 onClick = { showResetConfirm = true },
                 colors = IconButtonDefaults.iconButtonColors(
@@ -87,7 +91,47 @@ fun ControlPanel(
                 Icon(
                     imageVector = RefreshIcon,
                     contentDescription = stringResource(R.string.reset_description),
-                    modifier = Modifier.size(22.dp)
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .size(width = 1.dp, height = 20.dp)
+                    .background(Color.White.copy(alpha = 0.15f))
+            )
+
+            // Start Match / Select Players
+            IconButton(
+                onClick = onNewMatchClick,
+                colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = Color.White
+                )
+            ) {
+                Icon(
+                    imageVector = PeopleIcon,
+                    contentDescription = stringResource(R.string.start_match_title),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .size(width = 1.dp, height = 20.dp)
+                    .background(Color.White.copy(alpha = 0.15f))
+            )
+
+            // History / Navigation
+            IconButton(
+                onClick = onHistoryClick,
+                colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = Color.White
+                )
+            ) {
+                Icon(
+                    imageVector = HistoryIcon,
+                    contentDescription = stringResource(R.string.screen_history),
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }

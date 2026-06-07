@@ -17,15 +17,24 @@ ProJudge Feather is built as a modern Android application using **Jetpack Compos
 
 ### Directory & Package Structure
 - **[`MainActivity.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/MainActivity.kt)**: Entry point loading the main UI.
-- **[`model/`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/)**: Core domain logic.
-  - **[`ScoreboardLogic.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/ScoreboardLogic.kt)**: Badminton rule checker (Match Point / Winner check).
+- **[`model/`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/)**: Core domain logic and repository interfaces (framework-independent).
+  - **[`ScoreboardLogic.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/ScoreboardLogic.kt)**: Badminton rule checker.
+  - **[`Player.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/Player.kt)**: Player domain model.
+  - **[`MatchResult.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/MatchResult.kt)**: Match result domain model.
+  - **[`Repositories.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/Repositories.kt)**: Repository interfaces (`PlayerRepository`, `MatchResultRepository`).
+- **[`data/`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/data/)**: Data persistence and file I/O layer.
+  - **`database/`**: Room database config (`AppDatabase`), entity tables (`PlayerEntity`, `MatchResultEntity`), and DAOs.
+  - **`repository/`**: Concretions of repository interfaces (`PlayerRepositoryImpl`, `MatchResultRepositoryImpl`).
+  - **[`CsvHelper.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/data/CsvHelper.kt)**: Standalone CSV export/import helper.
 - **[`ui/`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/)**: Presentation layer.
   - **`theme/`**: Color palettes, Typography definition, and App Theme.
-  - **`scoreboard/`**: Scoreboard-specific components.
+  - **`scoreboard/`**: Scoreboard screens and modularized view components.
     - **[`ScoreboardUiState.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardUiState.kt)**: Unified immutable state definition.
-    - **[`ScoreboardViewModel.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardViewModel.kt)**: Emits UI state and consumes click actions.
-    - **[`ScoreboardScreen.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardScreen.kt)**: Stateful screen host and stateless content container.
-    - **`components/`**: Modularized view components (`PlayerHalf.kt`, `ControlPanel.kt`, `RenameDialog.kt`, `VectorIcons.kt`).
+    - **[`ScoreboardViewModel.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardViewModel.kt)**: Emits UI state, consumes click actions, and interacts with repositories.
+    - **[`ScoreboardScreen.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardScreen.kt)**: Main navigation screen routing.
+    - **[`HistoryScreen.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/scoreboard/HistoryScreen.kt)**: Match history view.
+    - **[`PlayersScreen.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/scoreboard/PlayersScreen.kt)**: Player definition and management view.
+    - **`components/`**: Modularized view components (`PlayerHalf.kt`, `ControlPanel.kt`, `RenameDialog.kt`, `StartMatchDialog.kt`, `VectorIcons.kt`).
 
 ---
 
@@ -73,9 +82,10 @@ Run these commands from the project root directory:
 
 ## 4. Testing Instructions
 
-All business rules and view transitions are fully verified via local unit tests:
-- **Rule Verification**: [`ExampleUnitTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ExampleUnitTest.kt) tests badminton scoring rules (deuces, match-point detection, winner caps).
-- **ViewModel Interactions**: [`ScoreboardViewModelTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardViewModelTest.kt) tests state mutation histories, player renaming constraints, undo states, and reset behaviors.
+All business rules, CSV serializers, and view transitions are fully verified via local unit tests:
+- **Rule & CSV Verification**: [`ExampleUnitTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ExampleUnitTest.kt) tests badminton scoring rules and CsvHelper encoding/decoding.
+- **ViewModel Interactions**: [`ScoreboardViewModelTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardViewModelTest.kt) tests state mutation histories, player renaming constraints, navigation routing, player addition/deletion, and automatic match result persistence using fake test repositories (`FakePlayerRepository`, `FakeMatchResultRepository`).
+- **Test Coroutine Dispatchers**: The ViewModel constructor supports coroutine scope and dispatcher injection, allowing JVM unit tests to override standard asynchronous operation handlers with `Dispatchers.Unconfined` for synchronous testing.
 
 To add new tests, place them under `app/src/test/java/` aligning packages to the tested file. Ensure tests run with the `./gradlew test` task.
 
@@ -84,11 +94,14 @@ To add new tests, place them under `app/src/test/java/` aligning packages to the
 ## 5. Security Considerations
 
 1. **Input Sanitization**:
-   - Player names entered in the rename dialog must be trimmed of leading/trailing whitespace.
-   - Empty or blank inputs are ignored and fallback to default names ("Player 1", "Player 2") to prevent blank fields or rendering corruption.
-2. **State Protection**:
-   - Scoreboard history lists (`history` inside the ViewModel) are capped to a max length of 50 actions to prevent infinite memory growth or heap leaks during extremely long matches.
-3. **No External Libraries**:
+   - Player names entered in the rename or add player dialog must be trimmed of leading/trailing whitespace.
+   - Empty or blank inputs are ignored and fallback to default names to prevent blank fields or rendering corruption.
+2. **Database Integrity**:
+   - The players table contains a unique database index on the player name field to prevent duplicate players.
+   - In-memory undo history list (`history` inside the ViewModel) is capped to a max length of 50 actions to prevent heap leaks.
+3. **CSV Escaping**:
+   - When exporting match records, strings containing commas, double quotes, or newlines are securely wrapped in double quotes and inner quotes are doubled (e.g. `""`) to prevent CSV injection vulnerabilities.
+4. **No External Libraries**:
    - To prevent supply-chain vulnerabilities, do not add external UI or icon packs without explicit permission. Use standard Android Jetpack and Kotlin libraries.
 
 ---

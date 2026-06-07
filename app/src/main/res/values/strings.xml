@@ -14,4 +14,24 @@
     <string name="rename_description">Rename</string>
     <string name="status_match_point">MATCH POINT</string>
     <string name="status_winner">WINNER</string>
+
+    <!-- New Features Strings -->
+    <string name="start_match_title">Start New Match</string>
+    <string name="player1_select_label">Select Player 1</string>
+    <string name="player2_select_label">Select Player 2</string>
+    <string name="quick_add_player_label">Quick Add Player</string>
+    <string name="add_button">Add</string>
+    <string name="start_button">Start</string>
+    <string name="screen_scoreboard">Scoreboard</string>
+    <string name="screen_history">Match History</string>
+    <string name="screen_players">Players</string>
+    <string name="clear_history_confirm">Clear History?</string>
+    <string name="clear_history_text">Are you sure you want to delete all match results permanently?</string>
+    <string name="clear_history_button">Clear All</string>
+    <string name="no_history_text">No match history found.</string>
+    <string name="no_players_text">No players defined. Please add players below.</string>
+    <string name="new_player_placeholder">New Player Name</string>
+    <string name="error_same_player">Please select two different players.</string>
+    <string name="export_csv">Export CSV</string>
+    <string name="import_csv">Import CSV</string>
 </resources>

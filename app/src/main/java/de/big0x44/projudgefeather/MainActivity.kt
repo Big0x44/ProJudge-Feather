@@ -11,10 +11,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import de.big0x44.projudgefeather.ui.scoreboard.ScoreboardScreen
 import de.big0x44.projudgefeather.ui.scoreboard.ScoreboardViewModel
+import de.big0x44.projudgefeather.ui.scoreboard.ScoreboardViewModelFactory
 import de.big0x44.projudgefeather.ui.theme.ProJudgeFeatherTheme
 
 class MainActivity : ComponentActivity() {
-    private val viewModel: ScoreboardViewModel by viewModels()
+    private val viewModel: ScoreboardViewModel by viewModels {
+        ScoreboardViewModelFactory(
+            (application as ProJudgeFeatherApplication).playerRepository,
+            (application as ProJudgeFeatherApplication).matchResultRepository
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
