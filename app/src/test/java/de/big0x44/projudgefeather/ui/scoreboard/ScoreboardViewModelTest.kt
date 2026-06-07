@@ -1,5 +1,7 @@
 package de.big0x44.projudgefeather.ui.scoreboard
 
+import de.big0x44.projudgefeather.data.CsvMatchExporter
+import de.big0x44.projudgefeather.data.CsvMatchImporter
 import de.big0x44.projudgefeather.model.MatchResult
 import de.big0x44.projudgefeather.model.MatchResultRepository
 import de.big0x44.projudgefeather.model.MatchStatus
@@ -59,11 +61,16 @@ class ScoreboardViewModelTest {
         playerRepository = FakePlayerRepository()
         matchResultRepository = FakeMatchResultRepository()
         val testScope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Unconfined)
+        val testDispatcher = kotlinx.coroutines.Dispatchers.Unconfined
+        val csvMatchExporter = CsvMatchExporter(matchResultRepository, testDispatcher)
+        val csvMatchImporter = CsvMatchImporter(matchResultRepository, testDispatcher)
         viewModel = ScoreboardViewModel(
             playerRepository,
             matchResultRepository,
+            csvMatchExporter,
+            csvMatchImporter,
             testScope,
-            kotlinx.coroutines.Dispatchers.Unconfined
+            testDispatcher
         )
     }
 

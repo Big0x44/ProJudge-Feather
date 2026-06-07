@@ -29,7 +29,9 @@ ProJudge Feather is built as a modern Android application using **Jetpack Compos
 - **[`data/`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/data/)**: Data persistence and file I/O layer.
   - **`database/`**: Room database config (`AppDatabase`), entity tables (`PlayerEntity`, `MatchResultEntity`), and DAOs.
   - **`repository/`**: Concretions of repository interfaces (`PlayerRepositoryImpl`, `MatchResultRepositoryImpl`).
-  - **[`CsvHelper.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/data/CsvHelper.kt)**: Standalone CSV export/import helper.
+  - **[`CsvMatchExporter.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/data/CsvMatchExporter.kt)**: CSV exporter utilizing `MatchResultRepository`.
+  - **[`CsvMatchImporter.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/data/CsvMatchImporter.kt)**: CSV importer utilizing `MatchResultRepository`.
+  - **[`CsvFormat.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/data/CsvFormat.kt)**: Static metadata definitions and escaping utilities for CSV processing.
 - **[`ui/`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/)**: Presentation layer.
   - **`theme/`**: Color palettes, Typography definition, and App Theme.
   - **`scoreboard/`**: Scoreboard screens and modularized view components.
@@ -92,7 +94,8 @@ Run these commands from the project root directory:
 ## 4. Testing Instructions
 
 All business rules, CSV serializers, and view transitions are fully verified via local unit tests:
-- **Rule & CSV Verification**: [`ExampleUnitTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ExampleUnitTest.kt) tests badminton scoring rules and CsvHelper encoding/decoding.
+- **Rule Verification**: [`ExampleUnitTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ExampleUnitTest.kt) tests badminton scoring rules.
+- **CSV Import / Export Verification**: [`CsvMatchExporterTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/data/CsvMatchExporterTest.kt) and [`CsvMatchImporterTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/data/CsvMatchImporterTest.kt) test exporting and importing match results.
 - **ViewModel Interactions**: [`ScoreboardViewModelTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardViewModelTest.kt) tests state mutation histories, player renaming constraints, navigation routing, player addition/deletion, and automatic match result persistence using fake test repositories (`FakePlayerRepository`, `FakeMatchResultRepository`).
 - **Test Coroutine Dispatchers**: The ViewModel constructor supports coroutine scope and dispatcher injection, allowing JVM unit tests to override standard asynchronous operation handlers with `Dispatchers.Unconfined` for synchronous testing.
 

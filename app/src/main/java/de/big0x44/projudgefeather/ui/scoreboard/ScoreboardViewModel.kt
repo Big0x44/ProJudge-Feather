@@ -2,7 +2,8 @@ package de.big0x44.projudgefeather.ui.scoreboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import de.big0x44.projudgefeather.data.CsvHelper
+import de.big0x44.projudgefeather.data.CsvMatchExporter
+import de.big0x44.projudgefeather.data.CsvMatchImporter
 import de.big0x44.projudgefeather.model.MatchResult
 import de.big0x44.projudgefeather.model.MatchResultRepository
 import de.big0x44.projudgefeather.model.MatchStatus
@@ -29,6 +30,8 @@ import javax.inject.Inject
 class ScoreboardViewModel @Inject constructor(
     private val playerRepository: PlayerRepository,
     private val matchResultRepository: MatchResultRepository,
+    private val csvMatchExporter: CsvMatchExporter,
+    private val csvMatchImporter: CsvMatchImporter,
     @param:DatabaseScope private val externalScope: CoroutineScope,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
@@ -240,25 +243,18 @@ class ScoreboardViewModel @Inject constructor(
 
     // CSV Import / Export
     suspend fun exportHistory(outputStream: OutputStream) {
-        withContext(ioDispatcher) {
-            try {
-                CsvHelper.exportToCsv(_uiState.value.matchHistory, outputStream)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        try {
+            csvMatchExporter.exportToCsv(outputStream)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
     suspend fun importHistory(inputStream: InputStream) {
-        withContext(ioDispatcher) {
-            try {
-                val imported = CsvHelper.importFromCsv(inputStream)
-                if (imported.isNotEmpty()) {
-                    matchResultRepository.saveAll(imported)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        try {
+            csvMatchImporter.importFromCsv(inputStream)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

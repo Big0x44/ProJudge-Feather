@@ -47,37 +47,4 @@ class ExampleUnitTest {
         assertEquals(MatchStatus.WINNER, ScoreboardLogic.getPlayerStatus(30, 29))
         assertNull(ScoreboardLogic.getPlayerStatus(29, 30))
     }
-
-    @Test
-    fun testCsvHelperExportAndImport() {
-        val matches = listOf(
-            de.big0x44.projudgefeather.model.MatchResult(
-                player1Name = "John \"The Pro\" Doe",
-                player2Name = "Alice, Bob & Co.",
-                score1 = 21,
-                score2 = 19,
-                timestamp = 1780000000000L,
-                winnerName = "John \"The Pro\" Doe"
-            )
-        )
-        val baos = java.io.ByteArrayOutputStream()
-        de.big0x44.projudgefeather.data.CsvHelper.exportToCsv(matches, baos)
-        val csvContent = baos.toString("UTF-8")
-
-        // Assert header is present and fields are escaped properly
-        assertTrue(csvContent.contains("player1,player2,score1,score2,timestamp,winner"))
-        assertTrue(csvContent.contains("\"John \"\"The Pro\"\" Doe\""))
-        assertTrue(csvContent.contains("\"Alice, Bob & Co.\""))
-
-        val bais = java.io.ByteArrayInputStream(baos.toByteArray())
-        val importedMatches = de.big0x44.projudgefeather.data.CsvHelper.importFromCsv(bais)
-        assertEquals(1, importedMatches.size)
-        val imported = importedMatches[0]
-        assertEquals("John \"The Pro\" Doe", imported.player1Name)
-        assertEquals("Alice, Bob & Co.", imported.player2Name)
-        assertEquals(21, imported.score1)
-        assertEquals(19, imported.score2)
-        assertEquals(1780000000000L, imported.timestamp)
-        assertEquals("John \"The Pro\" Doe", imported.winnerName)
-    }
 }
