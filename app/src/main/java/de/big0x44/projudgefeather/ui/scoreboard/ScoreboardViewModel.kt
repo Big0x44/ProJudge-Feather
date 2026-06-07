@@ -210,20 +210,6 @@ class ScoreboardViewModel(
         }
     }
 
-    fun renamePlayer1(newName: String) {
-        val name = newName.trim()
-        _uiState.update { currentState ->
-            currentState.copy(name1 = if (name.isNotEmpty()) name else null)
-        }
-    }
-
-    fun renamePlayer2(newName: String) {
-        val name = newName.trim()
-        _uiState.update { currentState ->
-            currentState.copy(name2 = if (name.isNotEmpty()) name else null)
-        }
-    }
-
     private fun saveToHistory() {
         if (history.size >= 50) {
             history.removeAt(0)

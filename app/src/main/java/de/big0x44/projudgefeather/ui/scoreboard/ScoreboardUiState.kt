@@ -22,5 +22,5 @@ data class ScoreboardUiState(
     val matchSaved: Boolean = false,
     val players: List<Player> = emptyList(),
     val matchHistory: List<MatchResult> = emptyList(),
-    val showStartMatchDialog: Boolean = false
+    val showStartMatchDialog: Boolean = true
 )

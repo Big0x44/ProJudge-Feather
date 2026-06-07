@@ -77,6 +77,7 @@ class ScoreboardViewModelTest {
         assertNull(state.status1)
         assertNull(state.status2)
         assertFalse(state.canUndo)
+        assertTrue(state.showStartMatchDialog)
     }
 
     @Test
@@ -137,26 +138,6 @@ class ScoreboardViewModelTest {
         assertNull(state.status1)
         assertNull(state.status2)
         assertTrue(state.canUndo) // Reset is undoable!
-    }
-
-    @Test
-    fun testRenamePlayer1() {
-        viewModel.renamePlayer1("Alice")
-        assertEquals("Alice", viewModel.uiState.value.name1)
-
-        // Blank name should clear custom name and revert to null (fallback to localized default)
-        viewModel.renamePlayer1("  ")
-        assertNull(viewModel.uiState.value.name1)
-    }
-
-    @Test
-    fun testRenamePlayer2() {
-        viewModel.renamePlayer2("Bob")
-        assertEquals("Bob", viewModel.uiState.value.name2)
-
-        // Empty name should clear custom name and revert to null (fallback to localized default)
-        viewModel.renamePlayer2("")
-        assertNull(viewModel.uiState.value.name2)
     }
 
     @Test

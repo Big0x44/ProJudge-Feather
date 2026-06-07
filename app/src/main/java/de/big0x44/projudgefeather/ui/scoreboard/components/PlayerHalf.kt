@@ -58,7 +58,6 @@ fun PlayerHalf(
     statusText: String?,
     gradientColors: List<Color>,
     onClick: () -> Unit,
-    onRenameClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -74,31 +73,16 @@ fun PlayerHalf(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Player Name & Edit Button
-            Row(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable { onRenameClick() }
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = name,
-                    style = TextStyle(
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White.copy(alpha = 0.9f)
-                    )
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Icon(
-                    imageVector = EditIcon,
-                    contentDescription = stringResource(R.string.rename_description),
-                    tint = Color.White.copy(alpha = 0.6f),
-                    modifier = Modifier.size(16.dp)
-                )
-            }
+            // Player Name
+            Text(
+                text = name,
+                style = TextStyle(
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White.copy(alpha = 0.9f)
+                ),
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 

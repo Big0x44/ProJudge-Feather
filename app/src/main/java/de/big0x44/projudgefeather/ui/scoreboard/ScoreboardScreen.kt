@@ -11,9 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,10 +19,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import de.big0x44.projudgefeather.R
 import de.big0x44.projudgefeather.model.MatchStatus
-import de.big0x44.projudgefeather.model.Player
 import de.big0x44.projudgefeather.ui.scoreboard.components.ControlPanel
 import de.big0x44.projudgefeather.ui.scoreboard.components.PlayerHalf
-import de.big0x44.projudgefeather.ui.scoreboard.components.RenameDialog
 import de.big0x44.projudgefeather.ui.scoreboard.components.StartMatchDialog
 import de.big0x44.projudgefeather.ui.theme.ProJudgeFeatherTheme
 
@@ -44,8 +39,6 @@ fun ScoreboardScreen(
                 onIncrement2 = { viewModel.incrementScore2() },
                 onUndo = { viewModel.undo() },
                 onReset = { viewModel.reset() },
-                onRename1 = { viewModel.renamePlayer1(it) },
-                onRename2 = { viewModel.renamePlayer2(it) },
                 onNewMatchClick = { viewModel.showStartMatchDialog(true) },
                 onHistoryClick = { viewModel.navigateTo(AppScreen.HISTORY) },
                 onDismissStartMatch = { viewModel.showStartMatchDialog(false) },
@@ -85,8 +78,6 @@ fun ScoreboardScreenContent(
     onIncrement2: () -> Unit,
     onUndo: () -> Unit,
     onReset: () -> Unit,
-    onRename1: (String) -> Unit,
-    onRename2: (String) -> Unit,
     onNewMatchClick: () -> Unit,
     onHistoryClick: () -> Unit,
     onDismissStartMatch: () -> Unit,
@@ -94,9 +85,6 @@ fun ScoreboardScreenContent(
     onAddPlayerStartMatch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Dialog state for renaming
-    var showRenameDialogForPlayer by remember { mutableStateOf<Int?>(null) }
-
     // Red and Blue Gradient Colors
     val redGradient = listOf(Color(0xFFE53935), Color(0xFFB71C1C))
     val blueGradient = listOf(Color(0xFF1E88E5), Color(0xFF0D47A1))
@@ -131,7 +119,6 @@ fun ScoreboardScreenContent(
                     statusText = statusText1,
                     gradientColors = redGradient,
                     onClick = onIncrement1,
-                    onRenameClick = { showRenameDialogForPlayer = 1 },
                     modifier = Modifier.weight(1f).fillMaxHeight()
                 )
                 PlayerHalf(
@@ -140,7 +127,6 @@ fun ScoreboardScreenContent(
                     statusText = statusText2,
                     gradientColors = blueGradient,
                     onClick = onIncrement2,
-                    onRenameClick = { showRenameDialogForPlayer = 2 },
                     modifier = Modifier.weight(1f).fillMaxHeight()
                 )
             }
@@ -152,7 +138,6 @@ fun ScoreboardScreenContent(
                     statusText = statusText1,
                     gradientColors = redGradient,
                     onClick = onIncrement1,
-                    onRenameClick = { showRenameDialogForPlayer = 1 },
                     modifier = Modifier.weight(1f).fillMaxWidth()
                 )
                 PlayerHalf(
@@ -161,7 +146,6 @@ fun ScoreboardScreenContent(
                     statusText = statusText2,
                     gradientColors = blueGradient,
                     onClick = onIncrement2,
-                    onRenameClick = { showRenameDialogForPlayer = 2 },
                     modifier = Modifier.weight(1f).fillMaxWidth()
                 )
             }
@@ -175,24 +159,6 @@ fun ScoreboardScreenContent(
             onNewMatchClick = onNewMatchClick,
             onHistoryClick = onHistoryClick,
             modifier = Modifier.align(panelAlignment)
-        )
-    }
-
-    // Rename Dialog Overlay
-    if (showRenameDialogForPlayer != null) {
-        val playerNum = showRenameDialogForPlayer!!
-        val currentName = if (playerNum == 1) displayName1 else displayName2
-        RenameDialog(
-            initialName = currentName,
-            onDismiss = { showRenameDialogForPlayer = null },
-            onConfirm = { newName ->
-                if (playerNum == 1) {
-                    onRename1(newName)
-                } else {
-                    onRename2(newName)
-                }
-                showRenameDialogForPlayer = null
-            }
         )
     }
 
@@ -225,8 +191,6 @@ fun ScoreboardPreview() {
             onIncrement2 = {},
             onUndo = {},
             onReset = {},
-            onRename1 = {},
-            onRename2 = {},
             onNewMatchClick = {},
             onHistoryClick = {},
             onDismissStartMatch = {},
