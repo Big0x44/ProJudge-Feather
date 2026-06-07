@@ -69,7 +69,7 @@ class ScoreboardViewModelTest {
         val testScope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Unconfined)
         val testDispatcher = kotlinx.coroutines.Dispatchers.Unconfined
         val csvMatchExporter = CsvMatchExporter(matchResultRepository, testDispatcher)
-        val csvMatchImporter = CsvMatchImporter(matchResultRepository, testDispatcher)
+        val csvMatchImporter = CsvMatchImporter(matchResultRepository, playerRepository, testDispatcher)
         viewModel = ScoreboardViewModel(
             playerRepository,
             matchResultRepository,

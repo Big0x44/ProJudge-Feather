@@ -1,9 +1,11 @@
 package de.big0x44.projudgefeather.data
 
+import de.big0x44.projudgefeather.model.PlayerRepository
 import de.big0x44.projudgefeather.di.IoDispatcher
 import de.big0x44.projudgefeather.model.MatchResult
 import de.big0x44.projudgefeather.model.MatchResultRepository
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.InputStream
@@ -14,6 +16,7 @@ import javax.inject.Singleton
 @Singleton
 class CsvMatchImporter @Inject constructor(
     private val matchResultRepository: MatchResultRepository,
+    private val playerRepository: PlayerRepository,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
     suspend fun importFromCsv(inputStream: InputStream) {
@@ -30,6 +33,18 @@ class CsvMatchImporter @Inject constructor(
             }
             
             if (parsedRows.isEmpty()) return@withContext
+
+            val existingPlayerIds = playerRepository.getAllPlayers().first().map { it.id }.toMutableSet()
+            for (match in parsedRows) {
+                if (match.player1Id !in existingPlayerIds) {
+                    playerRepository.addPlayer(match.player1Id, "Player_" + match.player1Id.take(8))
+                    existingPlayerIds.add(match.player1Id)
+                }
+                if (match.player2Id !in existingPlayerIds) {
+                    playerRepository.addPlayer(match.player2Id, "Player_" + match.player2Id.take(8))
+                    existingPlayerIds.add(match.player2Id)
+                }
+            }
 
             matchResultRepository.saveAll(parsedRows)
         }

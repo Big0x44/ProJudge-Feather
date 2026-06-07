@@ -66,7 +66,7 @@ class CsvMatchImporterTest {
 
         val repo = FakeMatchResultRepository()
         val playerRepo = FakePlayerRepository()
-        val importer = CsvMatchImporter(repo, Dispatchers.Unconfined)
+        val importer = CsvMatchImporter(repo, playerRepo, Dispatchers.Unconfined)
 
         val bais = ByteArrayInputStream(csvData.toByteArray(Charsets.UTF_8))
         importer.importFromCsv(bais)
