@@ -14,12 +14,12 @@ class MatchResultRepositoryImpl @Inject constructor(private val matchResultDao: 
             entities.map {
                 MatchResult(
                     id = it.id,
-                    player1Name = it.player1Name,
-                    player2Name = it.player2Name,
+                    player1Id = it.player1Id,
+                    player2Id = it.player2Id,
                     score1 = it.score1,
                     score2 = it.score2,
                     timestamp = it.timestamp,
-                    winnerName = it.winnerName
+                    winnerId = it.winnerId
                 )
             }
         }
@@ -28,12 +28,13 @@ class MatchResultRepositoryImpl @Inject constructor(private val matchResultDao: 
     override suspend fun saveMatch(match: MatchResult) {
         matchResultDao.insertMatch(
             MatchResultEntity(
-                player1Name = match.player1Name,
-                player2Name = match.player2Name,
+                id = match.id,
+                player1Id = match.player1Id,
+                player2Id = match.player2Id,
                 score1 = match.score1,
                 score2 = match.score2,
                 timestamp = match.timestamp,
-                winnerName = match.winnerName
+                winnerId = match.winnerId
             )
         )
     }
@@ -41,12 +42,13 @@ class MatchResultRepositoryImpl @Inject constructor(private val matchResultDao: 
     override suspend fun saveAll(matches: List<MatchResult>) {
         val entities = matches.map {
             MatchResultEntity(
-                player1Name = it.player1Name,
-                player2Name = it.player2Name,
+                id = it.id,
+                player1Id = it.player1Id,
+                player2Id = it.player2Id,
                 score1 = it.score1,
                 score2 = it.score2,
                 timestamp = it.timestamp,
-                winnerName = it.winnerName
+                winnerId = it.winnerId
             )
         }
         matchResultDao.insertAll(entities)

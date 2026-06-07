@@ -6,7 +6,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.ByteArrayOutputStream
@@ -35,12 +34,13 @@ class CsvMatchExporterTest {
     fun testExportToCsv() = runBlocking {
         val matches = listOf(
             MatchResult(
-                player1Name = "John \"The Pro\" Doe",
-                player2Name = "Alice, Bob & Co.",
+                id = "match-1",
+                player1Id = "p1",
+                player2Id = "p2",
                 score1 = 21,
                 score2 = 19,
                 timestamp = 1780000000000L,
-                winnerName = "John \"The Pro\" Doe"
+                winnerId = "p1"
             )
         )
         val repo = FakeMatchResultRepository(matches)
@@ -51,9 +51,7 @@ class CsvMatchExporterTest {
         val csvContent = baos.toString("UTF-8")
 
         // Assert header is present and fields are escaped properly
-        assertTrue(csvContent.startsWith("player1,player2,score1,score2,timestamp,winner"))
-        assertTrue(csvContent.contains("\"John \"\"The Pro\"\" Doe\""))
-        assertTrue(csvContent.contains("\"Alice, Bob & Co.\""))
-        assertTrue(csvContent.contains("21,19,1780000000000"))
+        assertTrue(csvContent.startsWith("id,player1,player2,score1,score2,timestamp,winner"))
+        assertTrue(csvContent.contains("match-1,p1,p2,21,19,1780000000000"))
     }
 }

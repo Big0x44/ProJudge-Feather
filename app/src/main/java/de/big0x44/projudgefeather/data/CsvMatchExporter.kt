@@ -22,13 +22,14 @@ class CsvMatchExporter @Inject constructor(
             val writer = PrintWriter(OutputStreamWriter(outputStream, "UTF-8"))
             writer.println(CsvFormat.HEADER)
             for (match in matches) {
-                val p1 = CsvFormat.escape(match.player1Name)
-                val p2 = CsvFormat.escape(match.player2Name)
+                val id = CsvFormat.escape(match.id)
+                val p1 = CsvFormat.escape(match.player1Id)
+                val p2 = CsvFormat.escape(match.player2Id)
                 val s1 = match.score1
                 val s2 = match.score2
                 val ts = match.timestamp
-                val w = CsvFormat.escape(match.winnerName)
-                writer.println("$p1,$p2,$s1,$s2,$ts,$w")
+                val w = CsvFormat.escape(match.winnerId)
+                writer.println("$id,$p1,$p2,$s1,$s2,$ts,$w")
             }
             writer.flush()
         }

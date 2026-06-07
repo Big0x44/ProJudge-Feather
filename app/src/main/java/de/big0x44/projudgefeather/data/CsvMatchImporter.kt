@@ -19,22 +19,23 @@ class CsvMatchImporter @Inject constructor(
     suspend fun importFromCsv(inputStream: InputStream) {
         withContext(ioDispatcher) {
             val reader = BufferedReader(InputStreamReader(inputStream, "UTF-8"))
-            val results = mutableListOf<MatchResult>()
+            val parsedRows = mutableListOf<MatchResult>()
             var line = reader.readLine() // Skip header or process if not header
             val firstColumnHeader = CsvFormat.HEADER.split(CsvFormat.DELIMITER)[0]
             if (line != null && !line.startsWith(firstColumnHeader)) {
-                parseLine(line)?.let { results.add(it) }
+                parseTempRow(line)?.let { parsedRows.add(it) }
             }
             while (reader.readLine().also { line = it } != null) {
-                parseLine(line!!)?.let { results.add(it) }
+                parseTempRow(line!!)?.let { parsedRows.add(it) }
             }
-            if (results.isNotEmpty()) {
-                matchResultRepository.saveAll(results)
-            }
+            
+            if (parsedRows.isEmpty()) return@withContext
+
+            matchResultRepository.saveAll(parsedRows)
         }
     }
 
-    private fun parseLine(line: String): MatchResult? {
+    private fun parseTempRow(line: String): MatchResult? {
         if (line.trim().isEmpty()) return null
         val cells = mutableListOf<String>()
         var inQuotes = false
@@ -62,12 +63,13 @@ class CsvMatchImporter @Inject constructor(
         if (cells.size < CsvFormat.EXPECTED_COLUMNS) return null
         return try {
             MatchResult(
-                player1Name = cells[CsvFormat.COL_PLAYER1],
-                player2Name = cells[CsvFormat.COL_PLAYER2],
+                id = cells[CsvFormat.COL_ID],
+                player1Id = cells[CsvFormat.COL_PLAYER1],
+                player2Id = cells[CsvFormat.COL_PLAYER2],
                 score1 = cells[CsvFormat.COL_SCORE1].toInt(),
                 score2 = cells[CsvFormat.COL_SCORE2].toInt(),
                 timestamp = cells[CsvFormat.COL_TIMESTAMP].toLong(),
-                winnerName = cells[CsvFormat.COL_WINNER]
+                winnerId = cells[CsvFormat.COL_WINNER]
             )
         } catch (e: Exception) {
             null

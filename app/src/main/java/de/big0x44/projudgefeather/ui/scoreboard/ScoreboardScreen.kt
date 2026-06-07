@@ -50,6 +50,7 @@ fun ScoreboardScreen(
         AppScreen.HISTORY -> {
             HistoryScreen(
                 matchHistory = uiState.matchHistory,
+                players = uiState.players,
                 onBack = { viewModel.navigateTo(AppScreen.SCOREBOARD) },
                 onClearAll = { viewModel.clearMatchHistory() },
                 onExport = { viewModel.exportHistory(it) },

@@ -2,6 +2,8 @@ package de.big0x44.projudgefeather.data
 
 import de.big0x44.projudgefeather.model.MatchResult
 import de.big0x44.projudgefeather.model.MatchResultRepository
+import de.big0x44.projudgefeather.model.Player
+import de.big0x44.projudgefeather.model.PlayerRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,6 +14,30 @@ import org.junit.Test
 import java.io.ByteArrayInputStream
 
 class CsvMatchImporterTest {
+
+    private class FakePlayerRepository : PlayerRepository {
+        private val _players = MutableStateFlow<List<Player>>(emptyList())
+        override fun getAllPlayers(): Flow<List<Player>> = _players
+        override suspend fun addPlayer(name: String): Boolean {
+            val list = _players.value.toMutableList()
+            if (list.any { it.name == name }) return false
+            list.add(Player(id = java.util.UUID.randomUUID().toString(), name = name))
+            _players.value = list
+            return true
+        }
+        override suspend fun addPlayer(id: String, name: String): Boolean {
+            val list = _players.value.toMutableList()
+            if (list.any { it.id == id }) return false
+            list.add(Player(id = id, name = name))
+            _players.value = list
+            return true
+        }
+        override suspend fun deletePlayer(player: Player) {
+            val list = _players.value.toMutableList()
+            list.remove(player)
+            _players.value = list
+        }
+    }
 
     private class FakeMatchResultRepository : MatchResultRepository {
         private val _matches = MutableStateFlow<List<MatchResult>>(emptyList())
@@ -34,11 +60,12 @@ class CsvMatchImporterTest {
     @Test
     fun testImportFromCsv() = runBlocking {
         val csvData = """
-            player1,player2,score1,score2,timestamp,winner
-            "John ""The Pro"" Doe","Alice, Bob & Co.",21,19,1780000000000,"John ""The Pro"" Doe"
+            id,player1,player2,score1,score2,timestamp,winner
+            "match-uuid-1","player-uuid-1","player-uuid-2",21,19,1780000000000,"player-uuid-1"
         """.trimIndent()
 
         val repo = FakeMatchResultRepository()
+        val playerRepo = FakePlayerRepository()
         val importer = CsvMatchImporter(repo, Dispatchers.Unconfined)
 
         val bais = ByteArrayInputStream(csvData.toByteArray(Charsets.UTF_8))
@@ -47,11 +74,20 @@ class CsvMatchImporterTest {
         val importedMatches = repo.getAllMatches().first()
         assertEquals(1, importedMatches.size)
         val imported = importedMatches[0]
-        assertEquals("John \"The Pro\" Doe", imported.player1Name)
-        assertEquals("Alice, Bob & Co.", imported.player2Name)
+        
+        assertEquals("match-uuid-1", imported.id)
+        assertEquals("player-uuid-1", imported.player1Id)
+        assertEquals("player-uuid-2", imported.player2Id)
         assertEquals(21, imported.score1)
         assertEquals(19, imported.score2)
         assertEquals(1780000000000L, imported.timestamp)
-        assertEquals("John \"The Pro\" Doe", imported.winnerName)
+        assertEquals("player-uuid-1", imported.winnerId)
+        
+        val players = playerRepo.getAllPlayers().first()
+        assertEquals(2, players.size)
+        val p1 = players.find { it.id == "player-uuid-1" }
+        val p2 = players.find { it.id == "player-uuid-2" }
+        assertEquals("Player_player-u", p1?.name)
+        assertEquals("Player_player-u", p2?.name)
     }
 }

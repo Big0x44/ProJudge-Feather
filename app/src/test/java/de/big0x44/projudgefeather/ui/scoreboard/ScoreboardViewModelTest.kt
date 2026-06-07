@@ -21,7 +21,13 @@ class FakePlayerRepository : PlayerRepository {
     override fun getAllPlayers(): Flow<List<Player>> = _players
     override suspend fun addPlayer(name: String): Boolean {
         val list = _players.value.toMutableList()
-        list.add(Player(id = list.size + 1, name = name))
+        list.add(Player(id = (list.size + 1).toString(), name = name))
+        _players.value = list
+        return true
+    }
+    override suspend fun addPlayer(id: String, name: String): Boolean {
+        val list = _players.value.toMutableList()
+        list.add(Player(id = id, name = name))
         _players.value = list
         return true
     }
@@ -194,7 +200,10 @@ class ScoreboardViewModelTest {
     }
 
     @Test
-    fun testMatchPersistenceOnWinner() {
+    fun testMatchPersistenceOnWinner() = kotlinx.coroutines.runBlocking {
+        playerRepository.addPlayer("John")
+        playerRepository.addPlayer("Bert")
+
         viewModel.startMatch("John", "Bert")
         // Score to 20-0
         repeat(20) { viewModel.incrementScore1() }
@@ -208,10 +217,15 @@ class ScoreboardViewModelTest {
 
         val matches = viewModel.uiState.value.matchHistory
         assertEquals(1, matches.size)
-        assertEquals("John", matches[0].player1Name)
-        assertEquals("Bert", matches[0].player2Name)
+
+        val players = viewModel.uiState.value.players
+        val johnId = players.find { it.name == "John" }?.id
+        val bertId = players.find { it.name == "Bert" }?.id
+
+        assertEquals(johnId, matches[0].player1Id)
+        assertEquals(bertId, matches[0].player2Id)
         assertEquals(21, matches[0].score1)
         assertEquals(0, matches[0].score2)
-        assertEquals("John", matches[0].winnerName)
+        assertEquals(johnId, matches[0].winnerId)
     }
 }

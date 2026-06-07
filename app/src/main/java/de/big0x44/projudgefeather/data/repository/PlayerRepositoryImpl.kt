@@ -22,6 +22,13 @@ class PlayerRepositoryImpl @Inject constructor(private val playerDao: PlayerDao)
         return rowId != -1L
     }
 
+    override suspend fun addPlayer(id: String, name: String): Boolean {
+        val trimmed = name.trim()
+        if (trimmed.isEmpty()) return false
+        val rowId = playerDao.insertPlayer(PlayerEntity(id = id, name = trimmed))
+        return rowId != -1L
+    }
+
     override suspend fun deletePlayer(player: Player) {
         playerDao.deletePlayer(PlayerEntity(id = player.id, name = player.name))
     }

@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import de.big0x44.projudgefeather.R
 import de.big0x44.projudgefeather.model.MatchResult
+import de.big0x44.projudgefeather.model.Player
 import de.big0x44.projudgefeather.ui.scoreboard.components.BackIcon
 import de.big0x44.projudgefeather.ui.scoreboard.components.DeleteIcon
 import de.big0x44.projudgefeather.ui.scoreboard.components.FileOpenIcon
@@ -66,6 +67,7 @@ import java.util.Locale
 @Composable
 fun HistoryScreen(
     matchHistory: List<MatchResult>,
+    players: List<Player>,
     onBack: () -> Unit,
     onClearAll: () -> Unit,
     onExport: suspend (OutputStream) -> Unit,
@@ -236,7 +238,7 @@ fun HistoryScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(matchHistory, key = { it.timestamp }) { match ->
-                        MatchResultCard(match = match)
+                        MatchResultCard(match = match, players = players)
                     }
                 }
             }
@@ -268,9 +270,13 @@ fun HistoryScreen(
 }
 
 @Composable
-fun MatchResultCard(match: MatchResult) {
+fun MatchResultCard(match: MatchResult, players: List<Player>) {
     val dateFormat = remember { SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()) }
     val dateString = dateFormat.format(Date(match.timestamp))
+
+    val playersMap = remember(players) { players.associate { it.id to it.name } }
+    val p1Name = playersMap[match.player1Id] ?: "Unknown"
+    val p2Name = playersMap[match.player2Id] ?: "Unknown"
 
     Card(
         modifier = Modifier
@@ -307,9 +313,9 @@ fun MatchResultCard(match: MatchResult) {
                     modifier = Modifier.weight(1f),
                     horizontalAlignment = Alignment.Start
                 ) {
-                    val isP1Winner = match.winnerName == match.player1Name
+                    val isP1Winner = match.winnerId == match.player1Id
                     Text(
-                        text = match.player1Name,
+                        text = p1Name,
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = if (isP1Winner) FontWeight.Bold else FontWeight.Normal,
                         color = if (isP1Winner) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
@@ -360,9 +366,9 @@ fun MatchResultCard(match: MatchResult) {
                     modifier = Modifier.weight(1f),
                     horizontalAlignment = Alignment.End
                 ) {
-                    val isP2Winner = match.winnerName == match.player2Name
+                    val isP2Winner = match.winnerId == match.player2Id
                     Text(
-                        text = match.player2Name,
+                        text = p2Name,
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = if (isP2Winner) FontWeight.Bold else FontWeight.Normal,
                         color = if (isP2Winner) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,

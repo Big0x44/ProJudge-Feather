@@ -172,13 +172,21 @@ class ScoreboardViewModel @Inject constructor(
 
     private fun saveFinishedMatch(p1Name: String, p2Name: String, s1: Int, s2: Int, winner: String) {
         currentScope.launch(ioDispatcher) {
+            val players = _uiState.value.players
+            val p1 = players.find { it.name == p1Name }
+            val p2 = players.find { it.name == p2Name }
+            val p1Id = p1?.id ?: java.util.UUID.randomUUID().toString()
+            val p2Id = p2?.id ?: java.util.UUID.randomUUID().toString()
+            val winnerId = if (winner == p1Name) p1Id else p2Id
+
             val result = MatchResult(
-                player1Name = p1Name,
-                player2Name = p2Name,
+                id = java.util.UUID.randomUUID().toString(),
+                player1Id = p1Id,
+                player2Id = p2Id,
                 score1 = s1,
                 score2 = s2,
                 timestamp = System.currentTimeMillis(),
-                winnerName = winner
+                winnerId = winnerId
             )
             matchResultRepository.saveMatch(result)
         }
