@@ -50,3 +50,6 @@ google-services.json
 
 # Antigravity
 .antigravitycli
+
+# Release artifacts
+/app/release/
