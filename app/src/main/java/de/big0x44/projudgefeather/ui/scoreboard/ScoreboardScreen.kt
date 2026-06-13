@@ -35,6 +35,7 @@ fun ScoreboardScreen(
     onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    aaaa
     val uiState by viewModel.uiState.collectAsState()
     val view = LocalView.current
 
