@@ -31,11 +31,12 @@ ProJudge Feather is built as a modern Android application using **Jetpack Compos
 
 ## 2. Build and Test Commands
 
-### Java Environment Requirements
-The project requires JDK 11 or higher to build. If java is not set up on your path or you run into environment issues, use the JDK packaged inside Android Studio:
+### Environment Requirements
+The project requires JDK 11 or higher and the Android SDK to build. If they are not configured in your environment, set the following variables:
 ```bash
-# Path to Android Studio JBR:
+# Path to Android Studio JBR and Android SDK:
 export JAVA_HOME=/opt/android-studio/jbr
+export ANDROID_HOME=/home/daniel/Android/Sdk
 ```
 
 ### Gradle Commands
