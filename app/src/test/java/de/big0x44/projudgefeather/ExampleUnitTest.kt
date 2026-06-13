@@ -9,6 +9,9 @@ class ExampleUnitTest {
 
     @Test
     fun testNormalPlayStatus() {
+        // Test assertion
+        assertEquals(true, false)
+
         // Initial state
         assertNull(ScoreboardLogic.getPlayerStatus(0, 0))
         assertNull(ScoreboardLogic.getPlayerStatus(0, 0))
