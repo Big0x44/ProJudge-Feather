@@ -68,6 +68,8 @@ Run these commands from the project root directory:
 4. **Localization & Resource Decoupling**:
    - Do not hardcode user-facing strings inside Compose UI files. Use `stringResource(R.string.id)` inside Composable functions.
    - Keep the `ViewModel` agnostic of Android resource strings and `Context` objects. Instead, store type-safe structures like Enums (`MatchStatus`) or nullable attributes (e.g., `name1: String? = null` where `null` signifies fallback to default) inside the UI state, and resolve them to localized resource strings within the stateless visual content container.
+5. **Screen Activity & Display State**:
+   - To ensure the device display remains active during scoring/match tracking, the main scoreboard/count screen utilizes `DisposableEffect` with `LocalView.current` to set `keepScreenOn = true` during composition, and resets it to `false` when disposed.
 
 ---
 
