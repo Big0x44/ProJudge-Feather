@@ -19,6 +19,7 @@ ProJudge Feather is built as a modern Android application using **Jetpack Compos
 - **[`MainActivity.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/MainActivity.kt)**: Entry point loading the main UI.
 - **[`model/`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/)**: Core domain logic.
   - **[`ScoreboardLogic.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/ScoreboardLogic.kt)**: Badminton rule checker (Match Point / Winner check).
+  - **[`SettingsRepository.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/SettingsRepository.kt)**: Repository defining setting persistence interface and SharedPreferences implementation.
 - **[`ui/`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/)**: Presentation layer.
   - **`theme/`**: Color palettes, Typography definition, and App Theme.
   - **`scoreboard/`**: Scoreboard-specific components.
@@ -26,6 +27,10 @@ ProJudge Feather is built as a modern Android application using **Jetpack Compos
     - **[`ScoreboardViewModel.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardViewModel.kt)**: Emits UI state and consumes click actions.
     - **[`ScoreboardScreen.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardScreen.kt)**: Stateful screen host and stateless content container.
     - **`components/`**: Modularized view components (`PlayerHalf.kt`, `ControlPanel.kt`, `RenameDialog.kt`, `VectorIcons.kt`).
+  - **`settings/`**: Settings-specific components.
+    - **[`SettingsUiState.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/settings/SettingsUiState.kt)**: Unified immutable settings state definition.
+    - **[`SettingsViewModel.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/settings/SettingsViewModel.kt)**: Manages and validates settings state.
+    - **[`SettingsScreen.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/settings/SettingsScreen.kt)**: Composable view allowing settings modification.
 
 ---
 
@@ -76,7 +81,9 @@ Run these commands from the project root directory:
 
 All business rules and view transitions are fully verified via local unit tests:
 - **Rule Verification**: [`ExampleUnitTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ExampleUnitTest.kt) tests badminton scoring rules (deuces, match-point detection, winner caps).
-- **ViewModel Interactions**: [`ScoreboardViewModelTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardViewModelTest.kt) tests state mutation histories, player renaming constraints, undo states, and reset behaviors.
+- **ViewModel Interactions**:
+  - [`ScoreboardViewModelTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardViewModelTest.kt) tests state mutation histories, player renaming constraints, undo states, reset behaviors, and dynamic setting adjustments.
+  - [`SettingsViewModelTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ui/settings/SettingsViewModelTest.kt) tests settings initialization, validation constraints, and persistence updates.
 
 To add new tests, place them under `app/src/test/java/` aligning packages to the tested file. Ensure tests run with the `./gradlew test` task.
 

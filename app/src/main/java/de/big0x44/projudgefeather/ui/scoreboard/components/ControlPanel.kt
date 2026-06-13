@@ -36,6 +36,7 @@ fun ControlPanel(
     canUndo: Boolean,
     onUndo: () -> Unit,
     onReset: () -> Unit,
+    onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showResetConfirm by remember { mutableStateOf(false) }
@@ -87,6 +88,25 @@ fun ControlPanel(
                 Icon(
                     imageVector = RefreshIcon,
                     contentDescription = stringResource(R.string.reset_description),
+                    modifier = Modifier.size(22.dp)
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .size(width = 1.dp, height = 24.dp)
+                    .background(Color.White.copy(alpha = 0.15f))
+            )
+
+            IconButton(
+                onClick = onSettingsClick,
+                colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = Color.White
+                )
+            ) {
+                Icon(
+                    imageVector = SettingsIcon,
+                    contentDescription = stringResource(R.string.settings_description),
                     modifier = Modifier.size(22.dp)
                 )
             }

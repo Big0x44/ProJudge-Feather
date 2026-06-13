@@ -1,6 +1,9 @@
 package de.big0x44.projudgefeather.ui.scoreboard
 
 import de.big0x44.projudgefeather.model.MatchStatus
+import de.big0x44.projudgefeather.model.SettingsRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -11,10 +14,20 @@ import org.junit.Test
 class ScoreboardViewModelTest {
 
     private lateinit var viewModel: ScoreboardViewModel
+    private lateinit var settingsRepository: SettingsRepository
+
+    class FakeSettingsRepository(initialPoints: Int = 21) : SettingsRepository {
+        private val _winningPoints = MutableStateFlow(initialPoints)
+        override val winningPoints = _winningPoints.asStateFlow()
+        override fun setWinningPoints(points: Int) {
+            _winningPoints.value = points
+        }
+    }
 
     @Before
     fun setUp() {
-        viewModel = ScoreboardViewModel()
+        settingsRepository = FakeSettingsRepository()
+        viewModel = ScoreboardViewModel(settingsRepository)
     }
 
     @Test
@@ -122,5 +135,23 @@ class ScoreboardViewModelTest {
         viewModel.incrementScore1()
         assertEquals(MatchStatus.WINNER, viewModel.uiState.value.status1)
         assertNull(viewModel.uiState.value.status2)
+    }
+
+    @Test
+    fun testCustomWinningPoints() {
+        // Change winning points to 11
+        settingsRepository.setWinningPoints(11)
+        viewModel.refreshSettings()
+
+        // Play to 10-9
+        repeat(10) { viewModel.incrementScore1() }
+        repeat(9) { viewModel.incrementScore2() }
+
+        assertEquals(MatchStatus.MATCH_POINT, viewModel.uiState.value.status1)
+        assertNull(viewModel.uiState.value.status2)
+
+        // Score 11-9 (Player 1 wins)
+        viewModel.incrementScore1()
+        assertEquals(MatchStatus.WINNER, viewModel.uiState.value.status1)
     }
 }

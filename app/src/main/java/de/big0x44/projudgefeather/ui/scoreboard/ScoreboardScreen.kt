@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,9 +30,14 @@ import de.big0x44.projudgefeather.ui.theme.ProJudgeFeatherTheme
 @Composable
 fun ScoreboardScreen(
     viewModel: ScoreboardViewModel,
+    onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.refreshSettings()
+    }
 
     ScoreboardScreenContent(
         uiState = uiState,
@@ -41,6 +47,7 @@ fun ScoreboardScreen(
         onReset = { viewModel.reset() },
         onRename1 = { viewModel.renamePlayer1(it) },
         onRename2 = { viewModel.renamePlayer2(it) },
+        onSettingsClick = onSettingsClick,
         modifier = modifier
     )
 }
@@ -54,6 +61,7 @@ fun ScoreboardScreenContent(
     onReset: () -> Unit,
     onRename1: (String) -> Unit,
     onRename2: (String) -> Unit,
+    onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Dialog state for renaming
@@ -134,6 +142,7 @@ fun ScoreboardScreenContent(
             canUndo = uiState.canUndo,
             onUndo = onUndo,
             onReset = onReset,
+            onSettingsClick = onSettingsClick,
             modifier = Modifier.align(panelAlignment)
         )
     }
@@ -176,7 +185,8 @@ fun ScoreboardPreview() {
             onUndo = {},
             onReset = {},
             onRename1 = {},
-            onRename2 = {}
+            onRename2 = {},
+            onSettingsClick = {}
         )
     }
 }

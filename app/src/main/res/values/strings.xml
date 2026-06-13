@@ -14,4 +14,12 @@
     <string name="rename_description">Rename</string>
     <string name="status_match_point">MATCH POINT</string>
     <string name="status_winner">WINNER</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_description">Settings</string>
+    <string name="winning_points_label">Winning Points</string>
+    <string name="winning_points_desc">Configure the target score required to win a game (5–50).</string>
+    <string name="back_description">Back</string>
+    <string name="enter_points_title">Enter Winning Points</string>
+    <string name="points_label">Points (5–50)</string>
+    <string name="points_error">Please enter a number between 5 and 50</string>
 </resources>
