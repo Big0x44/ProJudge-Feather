@@ -4,6 +4,8 @@ import android.content.Context
 import de.big0x44.projudgefeather.data.database.AppDatabase
 import de.big0x44.projudgefeather.data.database.MatchResultDao
 import de.big0x44.projudgefeather.data.database.PlayerDao
+import de.big0x44.projudgefeather.model.SettingsRepository
+import de.big0x44.projudgefeather.model.SharedPreferencesSettingsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -61,5 +63,13 @@ object AppModule {
     @Singleton
     fun provideMatchResultDao(database: AppDatabase): MatchResultDao {
         return database.matchResultDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSettingsRepository(
+        @ApplicationContext context: Context
+    ): SettingsRepository {
+        return SharedPreferencesSettingsRepository(context)
     }
 }

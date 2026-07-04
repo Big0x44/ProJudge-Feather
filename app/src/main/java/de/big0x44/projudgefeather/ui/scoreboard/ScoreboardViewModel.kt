@@ -10,6 +10,7 @@ import de.big0x44.projudgefeather.model.MatchStatus
 import de.big0x44.projudgefeather.model.Player
 import de.big0x44.projudgefeather.model.PlayerRepository
 import de.big0x44.projudgefeather.model.ScoreboardLogic
+import de.big0x44.projudgefeather.model.SettingsRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +33,7 @@ class ScoreboardViewModel @Inject constructor(
     private val matchResultRepository: MatchResultRepository,
     private val csvMatchExporter: CsvMatchExporter,
     private val csvMatchImporter: CsvMatchImporter,
+    private val settingsRepository: SettingsRepository,
     @param:DatabaseScope private val externalScope: CoroutineScope,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
@@ -53,6 +55,21 @@ class ScoreboardViewModel @Inject constructor(
         currentScope.launch {
             matchResultRepository.getAllMatches().collect { list ->
                 _uiState.update { it.copy(matchHistory = list) }
+            }
+        }
+        // Automatically update statuses when winningPoints changes
+        currentScope.launch {
+            settingsRepository.winningPoints.collect { target ->
+                _uiState.update { currentState ->
+                    val status1 = ScoreboardLogic.getPlayerStatus(currentState.score1, currentState.score2, target)
+                    val status2 = ScoreboardLogic.getPlayerStatus(currentState.score2, currentState.score1, target)
+                    val isWinner = status1 == MatchStatus.WINNER || status2 == MatchStatus.WINNER
+                    currentState.copy(
+                        status1 = status1,
+                        status2 = status2,
+                        matchSaved = currentState.matchSaved || isWinner
+                    )
+                }
             }
         }
     }
@@ -84,6 +101,16 @@ class ScoreboardViewModel @Inject constructor(
         }
     }
 
+    fun refreshSettings() {
+        val target = settingsRepository.winningPoints.value
+        _uiState.update { currentState ->
+            currentState.copy(
+                status1 = ScoreboardLogic.getPlayerStatus(currentState.score1, currentState.score2, target),
+                status2 = ScoreboardLogic.getPlayerStatus(currentState.score2, currentState.score1, target)
+            )
+        }
+    }
+
     fun incrementScore1() {
         if (_uiState.value.status1 == MatchStatus.WINNER || _uiState.value.status2 == MatchStatus.WINNER) return
 
@@ -96,9 +123,10 @@ class ScoreboardViewModel @Inject constructor(
         var winnerName = ""
 
         _uiState.update { currentState ->
+            val target = settingsRepository.winningPoints.value
             val newScore = currentState.score1 + 1
-            val status1 = ScoreboardLogic.getPlayerStatus(newScore, currentState.score2)
-            val status2 = ScoreboardLogic.getPlayerStatus(currentState.score2, newScore)
+            val status1 = ScoreboardLogic.getPlayerStatus(newScore, currentState.score2, target)
+            val status2 = ScoreboardLogic.getPlayerStatus(currentState.score2, newScore, target)
 
             p1Score = newScore
             p2Score = currentState.score2
@@ -139,9 +167,10 @@ class ScoreboardViewModel @Inject constructor(
         var winnerName = ""
 
         _uiState.update { currentState ->
+            val target = settingsRepository.winningPoints.value
             val newScore = currentState.score2 + 1
-            val status1 = ScoreboardLogic.getPlayerStatus(currentState.score1, newScore)
-            val status2 = ScoreboardLogic.getPlayerStatus(newScore, currentState.score1)
+            val status1 = ScoreboardLogic.getPlayerStatus(currentState.score1, newScore, target)
+            val status2 = ScoreboardLogic.getPlayerStatus(newScore, currentState.score1, target)
 
             p1Score = currentState.score1
             p2Score = newScore
@@ -195,6 +224,7 @@ class ScoreboardViewModel @Inject constructor(
     fun undo() {
         if (history.isNotEmpty()) {
             val lastState = history.removeAt(history.size - 1)
+            val target = settingsRepository.winningPoints.value
             _uiState.update { currentState ->
                 val status1 = ScoreboardLogic.getPlayerStatus(lastState.first, lastState.second)
                 val status2 = ScoreboardLogic.getPlayerStatus(lastState.second, lastState.first)
@@ -203,8 +233,8 @@ class ScoreboardViewModel @Inject constructor(
                 currentState.copy(
                     score1 = lastState.first,
                     score2 = lastState.second,
-                    status1 = status1,
-                    status2 = status2,
+                    status1 = ScoreboardLogic.getPlayerStatus(lastState.first, lastState.second, target),
+                    status2 = ScoreboardLogic.getPlayerStatus(lastState.second, lastState.first, target),
                     canUndo = history.isNotEmpty(),
                     matchSaved = isWinner
                 )

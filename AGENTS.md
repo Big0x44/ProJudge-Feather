@@ -22,10 +22,11 @@ ProJudge Feather is built as a modern Android application using **Jetpack Compos
   - **[`AppModule.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/di/AppModule.kt)**: Provides singleton instances of database, DAOs, customized dispatchers and coroutine scopes.
   - **[`RepositoryModule.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/di/RepositoryModule.kt)**: Binds repository implementations to domain repository interfaces.
 - **[`model/`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/)**: Core domain logic and repository interfaces (framework-independent).
-  - **[`ScoreboardLogic.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/ScoreboardLogic.kt)**: Badminton rule checker.
+  - **[`ScoreboardLogic.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/ScoreboardLogic.kt)**: Badminton rule checker (Match Point / Winner check).
   - **[`Player.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/Player.kt)**: Player domain model.
   - **[`MatchResult.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/MatchResult.kt)**: Match result domain model.
   - **[`Repositories.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/Repositories.kt)**: Repository interfaces (`PlayerRepository`, `MatchResultRepository`).
+  - **[`SettingsRepository.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/model/SettingsRepository.kt)**: Repository defining setting persistence interface and SharedPreferences implementation.
 - **[`data/`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/data/)**: Data persistence and file I/O layer.
   - **`database/`**: Room database config (`AppDatabase`), entity tables (`PlayerEntity`, `MatchResultEntity`), and DAOs.
   - **`repository/`**: Concretions of repository interfaces (`PlayerRepositoryImpl`, `MatchResultRepositoryImpl`).
@@ -37,20 +38,25 @@ ProJudge Feather is built as a modern Android application using **Jetpack Compos
   - **`scoreboard/`**: Scoreboard screens and modularized view components.
     - **[`ScoreboardUiState.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardUiState.kt)**: Unified immutable state definition.
     - **[`ScoreboardViewModel.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardViewModel.kt)**: Emits UI state, consumes click actions, and interacts with repositories.
-    - **[`ScoreboardScreen.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardScreen.kt)**: Main navigation screen routing.
+    - **[`ScoreboardScreen.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardScreen.kt)**: Stateful screen host and stateless content container.
     - **[`HistoryScreen.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/scoreboard/HistoryScreen.kt)**: Match history view.
     - **[`PlayersScreen.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/scoreboard/PlayersScreen.kt)**: Player definition and management view.
     - **`components/`**: Modularized view components (`PlayerHalf.kt`, `ControlPanel.kt`, `RenameDialog.kt`, `StartMatchDialog.kt`, `VectorIcons.kt`).
+  - **`settings/`**: Settings-specific components.
+    - **[`SettingsUiState.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/settings/SettingsUiState.kt)**: Unified immutable settings state definition.
+    - **[`SettingsViewModel.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/settings/SettingsViewModel.kt)**: Manages and validates settings state.
+    - **[`SettingsScreen.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/settings/SettingsScreen.kt)**: Composable view allowing settings modification.
 
 ---
 
 ## 2. Build and Test Commands
 
-### Java Environment Requirements
-The project requires JDK 11 or higher to build. If java is not set up on your path or you run into environment issues, use the JDK packaged inside Android Studio:
+### Environment Requirements
+The project requires JDK 11 or higher and the Android SDK to build. If they are not configured in your environment, set the following variables:
 ```bash
-# Path to Android Studio JBR:
+# Path to Android Studio JBR and Android SDK:
 export JAVA_HOME=/opt/android-studio/jbr
+export ANDROID_HOME=/home/daniel/Android/Sdk
 ```
 
 ### Gradle Commands
@@ -88,15 +94,19 @@ Run these commands from the project root directory:
    - Implementations of interfaces should be bound using `@Binds` in Dagger modules (e.g., [`RepositoryModule.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/di/RepositoryModule.kt)).
    - Do not instantiate or hold references to global singletons manually. Use Dagger Hilt to manage the scopes and lifetimes.
    - For injecting custom qualifiers on constructor parameters that are also properties, prepend the parameter annotations with the `@param:` target filter (e.g., `@param:DatabaseScope` or `@param:IoDispatcher`) to avoid Kotlin compiler property/parameter mismatch warnings and ensure correct Hilt code generation.
+6. **Screen Activity & Display State**:
+   - To ensure the device display remains active during scoring/match tracking, the main scoreboard/count screen utilizes `DisposableEffect` with `LocalView.current` to set `keepScreenOn = true` during composition, and resets it to `false` when disposed.
 
 ---
 
 ## 4. Testing Instructions
 
-All business rules, CSV serializers, and view transitions are fully verified via local unit tests:
-- **Rule Verification**: [`ExampleUnitTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ExampleUnitTest.kt) tests badminton scoring rules.
+All business rules, CSV serializers, settings updates, and view transitions are fully verified via local unit tests:
+- **Rule Verification**: [`ExampleUnitTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ExampleUnitTest.kt) tests badminton scoring rules (deuces, match-point detection, winner caps).
 - **CSV Import / Export Verification**: [`CsvMatchExporterTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/data/CsvMatchExporterTest.kt) and [`CsvMatchImporterTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/data/CsvMatchImporterTest.kt) test exporting and importing match results.
-- **ViewModel Interactions**: [`ScoreboardViewModelTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardViewModelTest.kt) tests state mutation histories, player renaming constraints, navigation routing, player addition/deletion, and automatic match result persistence using fake test repositories (`FakePlayerRepository`, `FakeMatchResultRepository`).
+- **ViewModel Interactions**:
+  - [`ScoreboardViewModelTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardViewModelTest.kt) tests state mutation histories, player renaming constraints, navigation routing, player addition/deletion, automatic match result persistence using fake test repositories, undo states, reset behaviors, and dynamic setting adjustments.
+  - [`SettingsViewModelTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ui/settings/SettingsViewModelTest.kt) tests settings initialization, validation constraints, and persistence updates.
 - **Test Coroutine Dispatchers**: The ViewModel constructor supports coroutine scope and dispatcher injection, allowing JVM unit tests to override standard asynchronous operation handlers with `Dispatchers.Unconfined` for synchronous testing.
 
 To add new tests, place them under `app/src/test/java/` aligning packages to the tested file. Ensure tests run with the `./gradlew test` task.

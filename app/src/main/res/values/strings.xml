@@ -14,7 +14,6 @@
     <string name="rename_description">Rename</string>
     <string name="status_match_point">MATCH POINT</string>
     <string name="status_winner">WINNER</string>
-
     <!-- New Features Strings -->
     <string name="start_match_title">Start New Match</string>
     <string name="player1_select_label">Select Player 1</string>
@@ -34,4 +33,14 @@
     <string name="error_same_player">Please select two different players.</string>
     <string name="export_csv">Export CSV</string>
     <string name="import_csv">Import CSV</string>
+
+    <!-- Settings Strings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_description">Settings</string>
+    <string name="winning_points_label">Winning Points</string>
+    <string name="winning_points_desc">Configure the target score required to win a game (5–50).</string>
+    <string name="back_description">Back</string>
+    <string name="enter_points_title">Enter Winning Points</string>
+    <string name="points_label">Points (5–50)</string>
+    <string name="points_error">Please enter a number between 5 and 50</string>
 </resources>

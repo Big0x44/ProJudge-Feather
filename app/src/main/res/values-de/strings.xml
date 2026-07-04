@@ -14,4 +14,12 @@
     <string name="rename_description">Umbenennen</string>
     <string name="status_match_point">MATCHBALL</string>
     <string name="status_winner">SIEGER</string>
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_description">Einstellungen</string>
+    <string name="winning_points_label">Gewinnpunkte</string>
+    <string name="winning_points_desc">Konfiguriere den Zielspielstand zum Gewinn des Spiels (5–50).</string>
+    <string name="back_description">Zurück</string>
+    <string name="enter_points_title">Gewinnpunkte eingeben</string>
+    <string name="points_label">Punkte (5–50)</string>
+    <string name="points_error">Bitte eine Zahl zwischen 5 und 50 eingeben</string>
 </resources>

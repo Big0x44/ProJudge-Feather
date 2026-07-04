@@ -7,8 +7,10 @@ import de.big0x44.projudgefeather.model.MatchResultRepository
 import de.big0x44.projudgefeather.model.MatchStatus
 import de.big0x44.projudgefeather.model.Player
 import de.big0x44.projudgefeather.model.PlayerRepository
+import de.big0x44.projudgefeather.model.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -61,11 +63,21 @@ class ScoreboardViewModelTest {
     private lateinit var viewModel: ScoreboardViewModel
     private lateinit var playerRepository: FakePlayerRepository
     private lateinit var matchResultRepository: FakeMatchResultRepository
+    private lateinit var settingsRepository: SettingsRepository
+
+    class FakeSettingsRepository(initialPoints: Int = 21) : SettingsRepository {
+        private val _winningPoints = MutableStateFlow(initialPoints)
+        override val winningPoints = _winningPoints.asStateFlow()
+        override fun setWinningPoints(points: Int) {
+            _winningPoints.value = points
+        }
+    }
 
     @Before
     fun setUp() {
         playerRepository = FakePlayerRepository()
         matchResultRepository = FakeMatchResultRepository()
+        settingsRepository = FakeSettingsRepository()
         val testScope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Unconfined)
         val testDispatcher = kotlinx.coroutines.Dispatchers.Unconfined
         val csvMatchExporter = CsvMatchExporter(matchResultRepository, testDispatcher)
@@ -75,6 +87,7 @@ class ScoreboardViewModelTest {
             matchResultRepository,
             csvMatchExporter,
             csvMatchImporter,
+            settingsRepository,
             testScope,
             testDispatcher
         )
@@ -227,5 +240,23 @@ class ScoreboardViewModelTest {
         assertEquals(21, matches[0].score1)
         assertEquals(0, matches[0].score2)
         assertEquals(johnId, matches[0].winnerId)
+    }
+
+    @Test
+    fun testCustomWinningPoints() {
+        // Change winning points to 11
+        settingsRepository.setWinningPoints(11)
+        viewModel.refreshSettings()
+
+        // Play to 10-9
+        repeat(10) { viewModel.incrementScore1() }
+        repeat(9) { viewModel.incrementScore2() }
+
+        assertEquals(MatchStatus.MATCH_POINT, viewModel.uiState.value.status1)
+        assertNull(viewModel.uiState.value.status2)
+
+        // Score 11-9 (Player 1 wins)
+        viewModel.incrementScore1()
+        assertEquals(MatchStatus.WINNER, viewModel.uiState.value.status1)
     }
 }

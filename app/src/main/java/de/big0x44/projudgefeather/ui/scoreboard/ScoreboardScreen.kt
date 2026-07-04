@@ -9,12 +9,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import de.big0x44.projudgefeather.R
@@ -27,9 +30,22 @@ import de.big0x44.projudgefeather.ui.theme.ProJudgeFeatherTheme
 @Composable
 fun ScoreboardScreen(
     viewModel: ScoreboardViewModel,
+    onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val view = LocalView.current
+
+    DisposableEffect(view) {
+        view.keepScreenOn = true
+        onDispose {
+            view.keepScreenOn = false
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.refreshSettings()
+    }
 
     when (uiState.currentScreen) {
         AppScreen.SCOREBOARD -> {
@@ -44,6 +60,7 @@ fun ScoreboardScreen(
                 onDismissStartMatch = { viewModel.showStartMatchDialog(false) },
                 onConfirmStartMatch = { p1, p2 -> viewModel.startMatch(p1, p2) },
                 onAddPlayerStartMatch = { viewModel.addPlayer(it) },
+                onSettingsClick = onSettingsClick,
                 modifier = modifier
             )
         }
@@ -84,6 +101,7 @@ fun ScoreboardScreenContent(
     onDismissStartMatch: () -> Unit,
     onConfirmStartMatch: (String, String) -> Unit,
     onAddPlayerStartMatch: (String) -> Unit,
+    onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Red and Blue Gradient Colors
@@ -159,6 +177,7 @@ fun ScoreboardScreenContent(
             onReset = onReset,
             onNewMatchClick = onNewMatchClick,
             onHistoryClick = onHistoryClick,
+            onSettingsClick = onSettingsClick,
             modifier = Modifier.align(panelAlignment)
         )
     }
@@ -196,7 +215,8 @@ fun ScoreboardPreview() {
             onHistoryClick = {},
             onDismissStartMatch = {},
             onConfirmStartMatch = { _, _ -> },
-            onAddPlayerStartMatch = {}
+            onAddPlayerStartMatch = {},
+            onSettingsClick = {}
         )
     }
 }
