@@ -79,9 +79,9 @@ fun HistoryScreen(
     val scope = rememberCoroutineScope()
     var showClearConfirm by remember { mutableStateOf(false) }
 
-    // Launcher for exporting CSV using Storage Access Framework
+    // Launcher for exporting JSON using Storage Access Framework
     val exportLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("text/csv")
+        contract = ActivityResultContracts.CreateDocument("application/json")
     ) { uri ->
         uri?.let {
             scope.launch {
@@ -187,7 +187,7 @@ fun HistoryScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Button(
-                    onClick = { exportLauncher.launch("match_history.csv") },
+                    onClick = { exportLauncher.launch("match_history.json") },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary
                     ),
@@ -200,7 +200,7 @@ fun HistoryScreen(
                 }
 
                 Button(
-                    onClick = { importLauncher.launch("*/*") },
+                    onClick = { importLauncher.launch("application/json") },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary
                     ),

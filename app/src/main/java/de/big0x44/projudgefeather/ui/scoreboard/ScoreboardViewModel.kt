@@ -2,8 +2,8 @@ package de.big0x44.projudgefeather.ui.scoreboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import de.big0x44.projudgefeather.data.CsvMatchExporter
-import de.big0x44.projudgefeather.data.CsvMatchImporter
+import de.big0x44.projudgefeather.data.JsonMatchExporter
+import de.big0x44.projudgefeather.data.JsonMatchImporter
 import de.big0x44.projudgefeather.model.MatchResult
 import de.big0x44.projudgefeather.model.MatchResultRepository
 import de.big0x44.projudgefeather.model.MatchStatus
@@ -31,8 +31,8 @@ import javax.inject.Inject
 class ScoreboardViewModel @Inject constructor(
     private val playerRepository: PlayerRepository,
     private val matchResultRepository: MatchResultRepository,
-    private val csvMatchExporter: CsvMatchExporter,
-    private val csvMatchImporter: CsvMatchImporter,
+    private val jsonMatchExporter: JsonMatchExporter,
+    private val jsonMatchImporter: JsonMatchImporter,
     private val settingsRepository: SettingsRepository,
     @param:DatabaseScope private val externalScope: CoroutineScope,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
@@ -279,10 +279,10 @@ class ScoreboardViewModel @Inject constructor(
         }
     }
 
-    // CSV Import / Export
+    // JSON Import / Export
     suspend fun exportHistory(outputStream: OutputStream) {
         try {
-            csvMatchExporter.exportToCsv(outputStream)
+            jsonMatchExporter.exportToJson(outputStream)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -290,7 +290,7 @@ class ScoreboardViewModel @Inject constructor(
 
     suspend fun importHistory(inputStream: InputStream) {
         try {
-            csvMatchImporter.importFromCsv(inputStream)
+            jsonMatchImporter.importFromJson(inputStream)
         } catch (e: Exception) {
             e.printStackTrace()
         }

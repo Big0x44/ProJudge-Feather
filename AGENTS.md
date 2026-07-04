@@ -30,9 +30,8 @@ ProJudge Feather is built as a modern Android application using **Jetpack Compos
 - **[`data/`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/data/)**: Data persistence and file I/O layer.
   - **`database/`**: Room database config (`AppDatabase`), entity tables (`PlayerEntity`, `MatchResultEntity`), and DAOs.
   - **`repository/`**: Concretions of repository interfaces (`PlayerRepositoryImpl`, `MatchResultRepositoryImpl`).
-  - **[`CsvMatchExporter.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/data/CsvMatchExporter.kt)**: CSV exporter utilizing `MatchResultRepository`.
-  - **[`CsvMatchImporter.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/data/CsvMatchImporter.kt)**: CSV importer utilizing `MatchResultRepository`.
-  - **[`CsvFormat.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/data/CsvFormat.kt)**: Static metadata definitions and escaping utilities for CSV processing.
+  - **[`JsonMatchExporter.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/data/JsonMatchExporter.kt)**: JSON exporter utilizing `MatchResultRepository`.
+  - **[`JsonMatchImporter.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/data/JsonMatchImporter.kt)**: JSON importer utilizing `MatchResultRepository`.
 - **[`ui/`](file:///home/daniel/src/ProJudge-Feather/app/src/main/java/de/big0x44/projudgefeather/ui/)**: Presentation layer.
   - **`theme/`**: Color palettes, Typography definition, and App Theme.
   - **`scoreboard/`**: Scoreboard screens and modularized view components.
@@ -101,9 +100,9 @@ Run these commands from the project root directory:
 
 ## 4. Testing Instructions
 
-All business rules, CSV serializers, settings updates, and view transitions are fully verified via local unit tests:
+All business rules, JSON serializers, settings updates, and view transitions are fully verified via local unit tests:
 - **Rule Verification**: [`ExampleUnitTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ExampleUnitTest.kt) tests badminton scoring rules (deuces, match-point detection, winner caps).
-- **CSV Import / Export Verification**: [`CsvMatchExporterTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/data/CsvMatchExporterTest.kt) and [`CsvMatchImporterTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/data/CsvMatchImporterTest.kt) test exporting and importing match results.
+- **JSON Import / Export Verification**: [`JsonMatchExporterTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/data/JsonMatchExporterTest.kt) and [`JsonMatchImporterTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/data/JsonMatchImporterTest.kt) test exporting and importing match results.
 - **ViewModel Interactions**:
   - [`ScoreboardViewModelTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ui/scoreboard/ScoreboardViewModelTest.kt) tests state mutation histories, player renaming constraints, navigation routing, player addition/deletion, automatic match result persistence using fake test repositories, undo states, reset behaviors, and dynamic setting adjustments.
   - [`SettingsViewModelTest.kt`](file:///home/daniel/src/ProJudge-Feather/app/src/test/java/de/big0x44/projudgefeather/ui/settings/SettingsViewModelTest.kt) tests settings initialization, validation constraints, and persistence updates.
@@ -121,8 +120,8 @@ To add new tests, place them under `app/src/test/java/` aligning packages to the
 2. **Database Integrity**:
    - The players table contains a unique database index on the player name field to prevent duplicate players.
    - In-memory undo history list (`history` inside the ViewModel) is capped to a max length of 50 actions to prevent heap leaks.
-3. **CSV Escaping**:
-   - When exporting match records, strings containing commas, double quotes, or newlines are securely wrapped in double quotes and inner quotes are doubled (e.g. `""`) to prevent CSV injection vulnerabilities.
+3. **JSON Escaping**:
+   - When exporting match records, string fields (such as player names and IDs) are securely escaped using backslashes for quotes, newlines, and other special characters to prevent JSON injection or format corruption.
 4. **No External Libraries**:
    - To prevent supply-chain vulnerabilities, do not add external UI or icon packs without explicit permission. Use standard Android Jetpack and Kotlin libraries.
 

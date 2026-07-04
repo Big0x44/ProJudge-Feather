@@ -31,8 +31,8 @@
     <string name="no_players_text">No players defined. Please add players below.</string>
     <string name="new_player_placeholder">New Player Name</string>
     <string name="error_same_player">Please select two different players.</string>
-    <string name="export_csv">Export CSV</string>
-    <string name="import_csv">Import CSV</string>
+    <string name="export_csv">Export JSON</string>
+    <string name="import_csv">Import JSON</string>
 
     <!-- Settings Strings -->
     <string name="settings_title">Settings</string>
